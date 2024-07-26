@@ -52,6 +52,7 @@ PyObject* Repository_create_commit(Repository *self, PyObject *args);
 PyObject* Repository_create_commit_string(Repository *self, PyObject *args);
 PyObject* Repository_create_commit_with_signature(Repository *self, PyObject *args);
 PyObject* Repository_create_tag(Repository *self, PyObject *args);
+PyObject* Repository_create_annotated_tag(Repository *self, PyObject *args);
 PyObject* Repository_create_branch(Repository *self, PyObject *args);
 PyObject* Repository_references_iterator_init(Repository *self, PyObject *args);
 PyObject* Repository_references_iterator_next(Repository *self, PyObject *args);

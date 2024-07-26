@@ -1231,6 +1231,43 @@ Repository_create_tag(Repository *self, PyObject *args)
     return git_oid_to_python(&oid);
 }
 
+PyDoc_STRVAR(Repository_create_annotated_tag__doc__,
+  "create_annotated_tag(name: str, oid: Oid, type: enums.ObjectType, tagger: Signature[, message: str]) -> Oid\n"
+  "\n"
+  "Create a new annotated tag object, return its oid."
+);
+PyObject *
+Repository_create_annotated_tag(Repository *self, PyObject *args)
+{
+    PyObject *py_oid;
+    Signature *py_tagger;
+    char *tag_name, *message;
+    git_oid oid;
+    git_object *target = NULL;
+    int err, target_type;
+    size_t len;
+
+    if (!PyArg_ParseTuple(args, "sOiO!s",
+                          &tag_name,
+                          &py_oid,
+                          &target_type,
+                          &SignatureType, &py_tagger,
+                          &message))
+        return NULL;
+
+    len = py_oid_to_git_oid(py_oid, &oid);
+    if (len == 0)
+        return NULL;
+
+    err = git_object_lookup_prefix(&target, self->repo, &oid, len,
+                                   target_type);
+    err = err < 0 ? err : git_tag_annotation_create(&oid, self->repo, tag_name, target,
+                                                   py_tagger->signature, message);
+    git_object_free(target);
+    if (err < 0)
+        return Error_set_oid(err, &oid, len);
+    return git_oid_to_python(&oid);
+}
 
 PyDoc_STRVAR(Repository_create_branch__doc__,
   "create_branch(name: str, commit: Commit, force: bool = False) -> Branch\n"
@@ -2410,6 +2447,7 @@ PyMethodDef Repository_methods[] = {
     METHOD(Repository, create_commit_string, METH_VARARGS),
     METHOD(Repository, create_commit_with_signature, METH_VARARGS),
     METHOD(Repository, create_tag, METH_VARARGS),
+    METHOD(Repository, create_annotated_tag, METH_VARARGS),
     METHOD(Repository, TreeBuilder, METH_VARARGS),
     METHOD(Repository, walk, METH_VARARGS),
     METHOD(Repository, descendant_of, METH_VARARGS),
