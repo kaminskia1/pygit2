@@ -70,6 +70,7 @@ def test_new_tag(barerepo):
     assert message == tag.message
     assert name == barerepo[tag.id].name
 
+
 def test_annotated_tag(barerepo):
     name = 'thetag'
     target = 'af431f20fc541ed6d5afede3e2dc7160f6f01f16'

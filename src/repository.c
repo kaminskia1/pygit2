@@ -1234,7 +1234,7 @@ Repository_create_tag(Repository *self, PyObject *args)
 PyDoc_STRVAR(Repository_create_annotated_tag__doc__,
   "create_annotated_tag(name: str, oid: Oid, type: enums.ObjectType, tagger: Signature[, message: str]) -> Oid\n"
   "\n"
-  "Create a new annotated tag object, return its oid."
+  "Create a new annotated tag object, return its oid. Does not create an associated reference."
 );
 PyObject *
 Repository_create_annotated_tag(Repository *self, PyObject *args)
@@ -1261,7 +1261,7 @@ Repository_create_annotated_tag(Repository *self, PyObject *args)
 
     err = git_object_lookup_prefix(&target, self->repo, &oid, len,
                                    target_type);
-    err = err < 0 ? err : git_tag_annotation_create(&oid, self->repo, tag_name, target,
+    err = git_tag_annotation_create(&oid, self->repo, tag_name, target,
                                                    py_tagger->signature, message);
     git_object_free(target);
     if (err < 0)
